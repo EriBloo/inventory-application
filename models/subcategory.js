@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SubcategorySchema = new Schema({
@@ -6,13 +6,13 @@ const SubcategorySchema = new Schema({
   description: { type: String, required: true, maxlength: 100 },
   parentCategory: {
     type: Schema.Types.ObjectId,
-    ref: "Category",
+    ref: 'Category',
     required: true,
   },
 });
 
-SubcategorySchema.virtual("url").get(() => {
+SubcategorySchema.virtual('url').get(function () {
   return `/categories/${this.parentCategory._id.toString()}/${this._id}`;
 });
 
-module.exports = mongoose.Model("Subcategory", SubcategorySchema);
+module.exports = mongoose.model('Subcategory', SubcategorySchema);

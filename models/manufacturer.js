@@ -1,12 +1,12 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ManufacturerSchema = new Schema({
   name: { type: String, required: true, maxlength: 100 },
 });
 
-ManufacturerSchema.virtual("url").get(() => {
+ManufacturerSchema.virtual('url').get(function () {
   return `/manufacturer/${this._id}`;
 });
 
-module.exports = mongoose.Model("Manufacturer", ManufacturerSchema);
+module.exports = mongoose.model('Manufacturer', ManufacturerSchema);
