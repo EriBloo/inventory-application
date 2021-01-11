@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SubcategorySchema = new Schema({
-  name: { type: String, required: true, maxlength: 100 },
+  name: { type: String, required: true, maxlength: 40 },
   description: { type: String, required: true, maxlength: 100 },
   parentCategory: {
     type: Schema.Types.ObjectId,

@@ -4,14 +4,14 @@ const Schema = mongoose.Schema;
 const ItemSchema = new Schema({
   name: { type: String, required: true, maxlength: 100 },
   description: { type: String, required: true, maxlength: 300 },
-  category: { type: Schema.Types.ObjectId, ref: 'Subcategory', required: true },
+  subcategory: { type: Schema.Types.ObjectId, ref: 'Subcategory', required: true },
   manufacturer: {
     type: Schema.Types.ObjectId,
     ref: 'Manufacturer',
     required: true,
   },
-  price: { type: Number, required: true },
-  stock: { type: Number, default: 1 },
+  price: { type: Number, required: true, min: 0.01 },
+  stock: { type: Number, default: 1, min: 1 },
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 });
 
