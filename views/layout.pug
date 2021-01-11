@@ -1,7 +1,40 @@
 doctype html
-html
+html(lang='en')
   head
     title= title
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css', integrity='sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1', crossorigin='anonymous')
+    script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js', integrity='sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW', crossorigin='anonymous')
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    block content
+    nav(class='navbar navbar-expand-md navbar-light bg-light')
+      div(class='container')
+        div(class='navbar-brand text-primary') Inventory app
+
+        button(class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarNav' aria-controls='navbarNav' aria-expanded='false' aria-label='Toggle navigation')
+          span(class='navbar-toggler-icon')
+        
+        div(class='collapse navbar-collapse justify-content-end' id='navbarNav')
+          ul(class='navbar-nav')
+
+            li(class='nav-item')
+              a(class='nav-link text-success active' aria-current='page' href='/') Home
+
+            li(class='nav-item')
+              a(class='nav-link' href='/items') Items
+
+            if categories
+              li(class='nav-item dropdown')
+                a(class='nav-link dropdown-toggle' href='#' id='navbarDropdownMenuLink' role='button' data-bs-toggle='dropdown' aria-expanded='false') Categories
+                ul(class='dropdown-menu' aria-labelledby='navbarDropdownMenu')
+                  each category in categories
+                    li
+                      a(class='dropdown-menu' href=category.url)= category.name
+
+            li(class='nav-item')
+              a(class='nav-link' href='/manufacturers') Manufacturers
+
+    div(class='container')
+      div(class='row')
+        block content
