@@ -9,7 +9,7 @@ block content
         div(class='col')
           div(class='card shadow-sm h-100')
             div(class='row card-body')
-              h5(class='card-title') #{item.manufacturer.name} #{item.name}
+              h5(class='card-title text-primary') #{item.manufacturer.name} #{item.name}
               div(class='mt-auto')
                 a(class='card-subtitle text-muted' href=item.subcategory.url)= item.subcategory.name
                 p(class='card-text text-truncate')= item.description

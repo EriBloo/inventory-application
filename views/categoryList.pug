@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  div(class='container')
+    div(class='row')
+      h1(class='display-5 mt-5')= title
+    div(class='row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-2')
+      each category, index in categories
+        div(class='col')
+          h5(class='text-primary mb-2')= category.name
+          div(class='list-group')
+          each subcategory in subcategories[index]
+            a(class='list-group-item list-group-item-action' href=subcategory.url)= subcategory.name
