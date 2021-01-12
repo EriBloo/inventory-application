@@ -5,7 +5,12 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoDBkey = require('./mongoDBkey');
 
+const Category = require('./models/category');
+
 const indexRouter = require('./routes/index');
+const itemRouter = require('./routes/items');
+const categoryRouter = require('./routes/categories');
+const manufacturerRouter = require('./routes/manufacturers');
 
 const app = express();
 
@@ -28,7 +33,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function (req, res, next) {
+  const categories = Category.find()
+    .sort([['name', 'ascending']])
+    .exec(function (err, result) {
+      if (err) {
+        next(err);
+      }
+      res.locals.categories = result;
+      next();
+    });
+});
+
 app.use('/', indexRouter);
+app.use('/items', itemRouter);
+app.use('/categories', categoryRouter);
+app.use('/manufacturers', manufacturerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

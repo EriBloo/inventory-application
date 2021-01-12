@@ -24,13 +24,16 @@ html(lang='en')
             li(class='nav-item')
               a(class='nav-link' href='/items') Items
 
-            if categories
               li(class='nav-item dropdown')
                 a(class='nav-link dropdown-toggle' href='#' id='navbarDropdownMenuLink' role='button' data-bs-toggle='dropdown' aria-expanded='false') Categories
                 ul(class='dropdown-menu' aria-labelledby='navbarDropdownMenu')
-                  each category in categories
-                    li
-                      a(class='dropdown-menu' href=category.url)= category.name
+                  li
+                    a(class='dropdown-item' href='/categories/') All categories
+                  hr
+                  if categories
+                    each category in categories
+                      li
+                        a(class='dropdown-item' href=category.url)= category.name
 
             li(class='nav-item')
               a(class='nav-link' href='/manufacturers') Manufacturers
