@@ -1,7 +1,16 @@
 const Item = require('../models/item');
 
 exports.itemList = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Items List');
+  Item.find()
+    .sort([['name', 'ascending']])
+    .populate('subcategory')
+    .populate('manufacturer')
+    .exec(function (err, result) {
+      if (err) {
+        return next(err);
+      }
+      res.render('itemList', { title: 'Browse all items', currentUrl: req.url, items: result });
+    });
 };
 
 exports.itemDetail = function (req, res, next) {
