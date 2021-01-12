@@ -4,17 +4,23 @@ block content
   div(class='container')
     div(class='row')
       h1(class='display-5 mt-5')= title
+    div(class='row mb-4 justify-content-center')
+      if subcategories
+        each subcategory in subcategories
+          div(class='col-3 g-2 text-center')
+            a(class='btn btn-outline-info btn-lg w-50' href=subcategory.url)= subcategory.name
     div(class='row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-2')
-      each item in items
-        div(class='col')
-          div(class='card shadow-sm h-100')
-            div(class='row card-body')
-              h5(class='card-title text-primary') #{item.manufacturer.name} #{item.name}
-              div(class='mt-auto')
-                a(class='card-subtitle text-muted' href=item.subcategory.url)= item.subcategory.name
-                p(class='card-text text-truncate')= item.description
-                div(class='d-flex justify-content-between align-items-center')
-                  a(class='btn btn-outline-primary' href=item.url) View...
-                  div(class='btn-group')
-                    a(class='btn btn-outline-secondary btn-sm' href=item.url + '/edit') Edit
-                    a(class='btn btn-outline-secondary btn-sm' href=item.url + '/delete') Delete
+      if items
+        each item in items
+          div(class='col')
+            div(class='card shadow-sm h-100')
+              div(class='row card-body')
+                h5(class='card-title text-primary') #{item.manufacturer.name} #{item.name}
+                div(class='mt-auto')
+                  a(class='card-subtitle text-muted' href=item.subcategory.url)= item.subcategory.name
+                  p(class='card-text text-truncate')= item.description
+                  div(class='d-flex justify-content-between align-items-center')
+                    a(class='btn btn-outline-primary' href=item.url) View
+                    div(class='btn-group')
+                      a(class='btn btn-outline-secondary btn-sm' href=item.url + '/edit') Edit
+                      a(class='btn btn-outline-secondary btn-sm' href=item.url + '/delete') Delete

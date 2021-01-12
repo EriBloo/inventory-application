@@ -2,6 +2,7 @@ const async = require('async');
 
 const Category = require('../models/category');
 const Subcategory = require('../models/subcategory');
+const Item = require('../models/item');
 
 exports.categoryList = function (req, res, next) {
   Category.find({}, 'name')
@@ -32,7 +33,42 @@ exports.categoryList = function (req, res, next) {
 };
 
 exports.categoryDetail = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Category Detail');
+  async.parallel(
+    {
+      category: function (callback) {
+        Category.findById(req.params.id).exec(callback);
+      },
+      subcategories: function (callback) {
+        Subcategory.find({ parentCategory: req.params.id })
+          .sort([['name', 'ascending']])
+          .exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        next(err);
+      }
+      async.concat(
+        results.subcategories,
+        function (item, callback) {
+          Item.find({ subcategory: item._id })
+            .populate('subcategory')
+            .populate('manufacturer')
+            .exec(callback);
+        },
+        function (err, result) {
+          if (err) {
+            next(err);
+          }
+          res.render('itemList', {
+            title: results.category.name,
+            subcategories: results.subcategories,
+            items: result,
+          });
+        },
+      );
+    },
+  );
 };
 
 exports.categoryCreateGet = function (req, res, next) {
