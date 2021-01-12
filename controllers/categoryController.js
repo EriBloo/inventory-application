@@ -1,7 +1,34 @@
+const async = require('async');
+
 const Category = require('../models/category');
+const Subcategory = require('../models/subcategory');
 
 exports.categoryList = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Categories List');
+  Category.find({}, 'name')
+    .sort([['name', 'ascending']])
+    .exec(function (err, result) {
+      if (err) {
+        next(err);
+      }
+      async.map(
+        result,
+        function (item, callback) {
+          Subcategory.find({
+            parentCategory: item._id,
+          }).exec(callback);
+        },
+        function (err, results) {
+          if (err) {
+            next(err);
+          }
+          res.render('categoryList', {
+            title: 'Browse categories',
+            categories: result,
+            subcategories: results,
+          });
+        },
+      );
+    });
 };
 
 exports.categoryDetail = function (req, res, next) {

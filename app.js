@@ -6,6 +6,7 @@ const logger = require('morgan');
 const mongoDBkey = require('./mongoDBkey');
 
 const Category = require('./models/category');
+const Manufacturer = require('./models/manufacturer');
 
 const indexRouter = require('./routes/index');
 const itemRouter = require('./routes/items');
@@ -34,13 +35,25 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function (req, res, next) {
-  const categories = Category.find()
+  Category.find()
     .sort([['name', 'ascending']])
     .exec(function (err, result) {
       if (err) {
         next(err);
       }
       res.locals.categories = result;
+      next();
+    });
+});
+
+app.use(function (req, res, next) {
+  Manufacturer.find()
+    .sort([['name', 'ascending']])
+    .exec(function (err, result) {
+      if (err) {
+        next(err);
+      }
+      res.locals.manufacturers = result;
       next();
     });
 });
