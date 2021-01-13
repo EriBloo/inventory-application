@@ -15,6 +15,7 @@ exports.subcategoryDetail = function (req, res, next) {
         Item.find({ subcategory: req.params.subcatId })
           .populate('manufacturer')
           .populate('subcategory')
+          .populate('comments')
           .exec(callback);
       },
     },
@@ -24,7 +25,7 @@ exports.subcategoryDetail = function (req, res, next) {
       }
       res.render('itemList', {
         title: `${results.subcategory.parentCategory.name} - ${results.subcategory.name}`,
-        items: results.items,
+        items: results.items.sort((a, b) => b.rating - a.rating),
       });
     },
   );

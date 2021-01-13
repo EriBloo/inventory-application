@@ -5,6 +5,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoDBkey = require('./mongoDBkey');
 
+require('./models/item');
+require('./models/comment');
+require('./models/subcategory');
 const Category = require('./models/category');
 const Manufacturer = require('./models/manufacturer');
 

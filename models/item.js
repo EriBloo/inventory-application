@@ -4,7 +4,11 @@ const Schema = mongoose.Schema;
 const ItemSchema = new Schema({
   name: { type: String, required: true, maxlength: 100 },
   description: { type: String, required: true, maxlength: 300 },
-  subcategory: { type: Schema.Types.ObjectId, ref: 'Subcategory', required: true },
+  subcategory: {
+    type: Schema.Types.ObjectId,
+    ref: 'Subcategory',
+    required: true,
+  },
   manufacturer: {
     type: Schema.Types.ObjectId,
     ref: 'Manufacturer',
@@ -20,7 +24,8 @@ ItemSchema.virtual('rating').get(function () {
     return comment.rating;
   });
   return (
-    ratings.reduce((total, rating) => (total += rating), 0) / ratings.length
+    ratings.reduce((total, rating) => (total += rating), 0) / ratings.length ||
+    0
   );
 });
 

@@ -54,6 +54,7 @@ exports.categoryDetail = function (req, res, next) {
           Item.find({ subcategory: item._id })
             .populate('subcategory')
             .populate('manufacturer')
+            .populate('comments')
             .exec(callback);
         },
         function (err, result) {
@@ -63,7 +64,7 @@ exports.categoryDetail = function (req, res, next) {
           res.render('itemList', {
             title: results.category.name,
             subcategories: results.subcategories,
-            items: result,
+            items: result.sort((a, b) => b.rating - a.rating),
           });
         },
       );

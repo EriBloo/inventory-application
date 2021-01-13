@@ -15,9 +15,13 @@ block content
             div(class='row card-body')
               h5(class='card-title text-primary') #{item.manufacturer.name} #{item.name}
               div(class='mt-auto')
-                a(class='card-subtitle text-muted' href=item.subcategory.url)= item.subcategory.name
-                p(class='card-text text-truncate')= item.description
                 div(class='d-flex justify-content-between align-items-center')
+                  a(class='card-subtitle text-muted text-decoration-none' href=item.subcategory.url)= item.subcategory.name
+                  if item.rating
+                    i(class='bi bi-star-fill text-warning')= item.rating
+                  else
+                    i(class='bi bi-star-fill text-warning') &ndash;
+                div(class='d-flex justify-content-between align-items-center mt-2')
                   a(class='btn btn-outline-primary' href=item.url) View
                   div(class='btn-group')
                     a(class='btn btn-outline-secondary btn-sm' href=item.url + '/edit') Edit

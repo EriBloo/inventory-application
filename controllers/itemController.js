@@ -5,11 +5,12 @@ exports.itemList = function (req, res, next) {
     .sort([['name', 'ascending']])
     .populate('subcategory')
     .populate('manufacturer')
+    .populate('comments')
     .exec(function (err, result) {
       if (err) {
         return next(err);
       }
-      res.render('itemList', { title: 'Browse all items', currentUrl: req.url, items: result });
+      res.render('itemList', { title: 'Browse all products', currentUrl: req.url, items: result.sort((a, b) => b.rating - a.rating) });
     });
 };
 
