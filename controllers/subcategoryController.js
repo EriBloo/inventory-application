@@ -1,7 +1,33 @@
+const async = require('async');
+
 const Subcategory = require('../models/subcategory');
+const Item = require('../models/item');
 
 exports.subcategoryDetail = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Subcategory Detail');
+  async.parallel(
+    {
+      subcategory: function (callback) {
+        Subcategory.findById(req.params.subcatId)
+          .populate('parentCategory')
+          .exec(callback);
+      },
+      items: function (callback) {
+        Item.find({ subcategory: req.params.subcatId })
+          .populate('manufacturer')
+          .populate('subcategory')
+          .exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) {
+        next(err);
+      }
+      res.render('itemList', {
+        title: `${results.subcategory.parentCategory.name} - ${results.subcategory.name}`,
+        items: results.items,
+      });
+    },
+  );
 };
 
 exports.subcategoryCreateGet = function (req, res, next) {

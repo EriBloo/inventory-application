@@ -61,7 +61,7 @@ app.use(function (req, res, next) {
 app.use('/', indexRouter);
 app.use('/items', itemRouter);
 app.use('/categories', categoryRouter);
-app.use('/manufacturers', manufacturerRouter);
+app.use('/manufacturer', manufacturerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
