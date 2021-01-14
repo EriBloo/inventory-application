@@ -24,7 +24,8 @@ exports.subcategoryDetail = function (req, res, next) {
         next(err);
       }
       res.render('itemList', {
-        title: `${results.subcategory.parentCategory.name} - ${results.subcategory.name}`,
+        title: results.subcategory.parentCategory.name,
+        subtitle: results.subcategory.name,
         items: results.items.sort((a, b) => b.rating - a.rating),
       });
     },

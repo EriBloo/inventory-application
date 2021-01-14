@@ -4,6 +4,8 @@ block content
   div(class='container')
     div(class='row')
       h1(class='display-5 mt-5')= title
+        if subtitle
+          h2(class='display-6 text-muted')= subtitle
     div(class='row mb-4 justify-content-center')
       each subcategory in subcategories || []
         div(class='col-3 g-2 text-center')
@@ -22,6 +24,12 @@ block content
                   else
                     i(class='bi bi-star-fill text-warning') &ndash;
                 div(class='d-flex justify-content-between align-items-center mt-2')
+                  p(class='text-primary') #{item.price} &euro;
+                  if item.stock
+                    p(class='text-success') Available
+                  else
+                    p(class='text-danger') Out of stock
+                div(class='d-flex justify-content-between align-items-center')
                   a(class='btn btn-outline-primary' href=item.url) View
                   div(class='btn-group')
                     a(class='btn btn-outline-secondary btn-sm' href=item.url + '/edit') Edit
