@@ -73,7 +73,6 @@ exports.commentCreatePost = [
           });
           return;
         } else {
-          console.log(req.body.author);
           const comment = new Comment({
             author: req.body.author,
             content: req.body.content,

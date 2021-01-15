@@ -27,7 +27,7 @@ html(lang='en')
 
               li(class='nav-item dropdown')
                 a(class='nav-link dropdown-toggle' href='#' id='navbarDropdownCategories' role='button' data-bs-toggle='dropdown' aria-expanded='false') Categories
-                ul(class='dropdown-menu' aria-labelledby='navbarDropdownMenu')
+                ul(class='dropdown-menu' aria-labelledby='navbarDropdownCategories')
                   li
                     a(class='dropdown-item' href='/categories/') All categories
                   hr
@@ -37,12 +37,15 @@ html(lang='en')
                         a(class='dropdown-item' href=category.url)= category.name
 
             li(class='nav-item dropdown')
-                a(class='nav-link dropdown-toggle' href='#' id='navbarDropdownManufacturers' role='button' data-bs-toggle='dropdown' aria-expanded='false') Manufacturers
-                ul(class='dropdown-menu' aria-labelledby='navbarDropdownMenu')
-                  if manufacturers
-                    each manufacturer in manufacturers
-                      li
-                        a(class='dropdown-item' href=manufacturer.url)= manufacturer.name
+              a(class='nav-link dropdown-toggle' href='#' id='navbarDropdownManufacturers' role='button' data-bs-toggle='dropdown' aria-expanded='false') Manufacturers
+              ul(class='dropdown-menu' aria-labelledby='navbarDropdownManufacturers')
+                if manufacturers
+                  each manufacturer in manufacturers
+                    li
+                      a(class='dropdown-item' href=manufacturer.url)= manufacturer.name
+            
+            li(class='nav-item')
+              a(class='nav-link' href='/admin') Admin
 
     section
       block content
