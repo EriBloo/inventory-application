@@ -1,0 +1,135 @@
+extends layout
+
+block content
+  div(class='container')
+    div(class='row')
+
+      h2(class='display-6 mt-5') Add
+      nav(class='nav nav-pills nav-column nav-sm-row nav-justified')
+        a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-item') Item
+        a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-subcategory') Subcategory
+        a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-category') Category
+        a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-manufacturer') Manufacturer
+      div(class='tab-content mt-4')
+        div(class='tab-pane fade' id='add-item')
+          div(class='card card-body')
+            form(action=`/admin/add-item` method='POST')
+              label(class='form-label mt-2' for='item-name') Name:
+              input(class='form-control' type='text' name='item-name' id='item-name')
+              label(class='form-label mt-2' for='item-description') Description:
+              textarea(class='form-control' type='text' name='item-description' id='item-description')
+              label(class='form-label mt-2' for='item-subcategory') Subcategory:
+              select(class='form-control' name='item-subcategory' id='item-subcategory')
+                for subcategory in subcategories
+                  option(value=subcategory._id) #{subcategory.name} (#{subcategory.parentCategory.name})
+              label(class='form-label mt-2' for='item-manufacturer')
+              select(class='form-control' name='item-manufacturer' id='item-manufacturer')
+                for manufacturer in manufacturers
+                  option(value=manufacturer._id)= manufacturer.name
+              label(class='form-label mt-2' for='item-price') Price (&euro;):
+              input(class='form-control' type='text' name='item-price' id='item-price')
+              label(class='form-label mt-2' for='item-stock') Stock:
+              input(class='form-control' type='text' name='item-stock' id='item-stock')
+              button(class='btn btn-success mt-2' type='submit') Add
+        div(class='tab-pane fade' id='add-subcategory')
+          div(class='card card-body')
+            form(action='/admin/add-subcategory' method='POST')
+              label(class='form-label mt-2' for='subcategory-name') Name:
+              input(class='form-control' type='text' name='subcategory-name' id='subcategory-name')
+              label(class='form-label mt-2' for='subcategory-description') Description:
+              textarea(class='form-control' type='text' name='subcategory-description' id='subcategory-description')
+              label(class='form-label mt-2' for='subcategory-parent') Parent category:
+              select(class='form-control' name='subcategory-parent' id='subcategory-subcategory')
+                for category in categories
+                  option(value=category._id)= category.name
+              button(class='btn btn-success mt-2' type='submit') Add
+        div(class='tab-pane fade' id='add-category')
+          div(class='card card-body')
+            form(action='/admin/add-category' method='POST')
+              label(class='form-label mt-2' for='category-name') Name:
+              input(class='form-control' type='text' name='category-name' id='category-name')
+              label(class='form-label mt-2' for='category-description') Description:
+              textarea(class='form-control' type='text' name='category-description' id='category-description')
+              button(class='btn btn-success mt-2' type='submit') Add
+        div(class='tab-pane fade' id='add-manufacturer')
+          div(class='card card-body')
+            form(action='/admin/add-manufacturer' method='POST')
+              label(class='form-label mt-2' for='manufacturer-name') Name:
+              input(class='form-control' type='text' name='manufacturer-name' id='manufacturer-name')
+              button(class='btn btn-success mt-2' type='submit') Add
+    
+    div(class='row mb-5')
+      h2(class='display-6 mt-5') Edit / Delete
+      nav(class='nav nav-pills nav-column nav-sm-row nav-justified')
+        a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#edit-item') Item
+        a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#edit-subcategory') Subcategory
+        a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#edit-category') Category
+        a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#edit-manufacturer') Manufacturer
+      div(class='tab-content mt-4')
+        div(class='tab-pane fade' id='edit-item') 
+          ul(class='list-group')
+            for item in items
+              li(class='list-group-item list-group-item-action')
+                div(class='row')
+                  a(class='col text-decoration-none' href=item.url) #{item.name} 
+                    small(class='text-secondary')= item.manufacturer.name
+                  div(class='col-sm-4 btn-group btn-group-justified')
+                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#edit-${item._id}`) Edit
+                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#delete-${item._id}`) Delete
+                div(class='row mt-2')
+                  div(class='col')
+                    div(class='collapse' id=`edit-${item._id}`)
+                      div(class='card card-body') edit
+                  div(class='col')
+                    div(class='collapse' id=`delete-${item._id}`)
+                      div(class='card card-body') delete
+        div(class='tab-pane fade' id='edit-subcategory')
+          ul(class='list-group')
+            for subcategory in subcategories
+              li(class='list-group-item list-group-item-action')
+                div(class='row')
+                  a(class='col text-decoration-none' href=subcategory.url) #{subcategory.name} 
+                    small(class='text-secondary')= subcategory.parentCategory.name
+                  div(class='col-sm-4 btn-group btn-group-justified')
+                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#edit-${subcategory._id}`) Edit
+                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#delete-${subcategory._id}`) Delete
+                div(class='row mt-2')
+                  div(class='col')
+                    div(class='collapse' id=`edit-${subcategory._id}`)
+                      div(class='card card-body') edit
+                  div(class='col')
+                    div(class='collapse' id=`delete-${subcategory._id}`)
+                      div(class='card card-body') delete
+        div(class='tab-pane fade' id='edit-category')
+          ul(class='list-group')
+            for category in categories
+              li(class='list-group-item list-group-item-action')
+                div(class='row')
+                  a(class='col text-decoration-none' href=category.url) #{category.name}
+                  div(class='col-sm-4 btn-group btn-group-justified')
+                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#edit-${category._id}`) Edit
+                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#delete-${category._id}`) Delete
+                div(class='row mt-2')
+                  div(class='col')
+                    div(class='collapse' id=`edit-${category._id}`)
+                      div(class='card card-body') edit
+                  div(class='col')
+                    div(class='collapse' id=`delete-${category._id}`)
+                      div(class='card card-body') delete
+        div(class='tab-pane fade' id='edit-manufacturer')
+          ul(class='list-group')
+            for manufacturer in manufacturers
+              li(class='list-group-item list-group-item-action')
+                div(class='row')
+                  a(class='col text-decoration-none' href=manufacturer.url) #{manufacturer.name}
+                  div(class='col-sm-4 btn-group btn-group-justified')
+                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#edit-${manufacturer._id}`) Edit
+                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#delete-${manufacturer._id}`) Delete
+                div(class='row mt-2')
+                  div(class='col')
+                    div(class='collapse' id=`edit-${manufacturer._id}`)
+                      div(class='card card-body') edit
+                  div(class='col')
+                    div(class='collapse' id=`delete-${manufacturer._id}`)
+                      div(class='card card-body') delete
+      
