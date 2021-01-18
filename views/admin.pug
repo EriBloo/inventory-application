@@ -2,10 +2,10 @@ extends layout
 
 block content
   div(class='container')
-    div(class='row')
 
+    div(class='row')
       h2(class='display-6 mt-5') Add
-      nav(class='nav nav-pills nav-column nav-sm-row nav-justified')
+      nav(class='nav nav-pills flex-column flex-sm-row nav-justified')
         a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-item') Item
         a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-subcategory') Subcategory
         a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-category') Category
@@ -13,7 +13,7 @@ block content
       div(class='tab-content mt-4')
         div(class='tab-pane fade' id='add-item')
           div(class='card card-body')
-            form(action=`/admin/add-item` method='POST')
+            form(action='/admin/add-item' method='POST')
               label(class='form-label mt-2' for='item-name') Name:
               input(class='form-control' type='text' name='item-name' id='item-name')
               label(class='form-label mt-2' for='item-description') Description:
@@ -60,7 +60,7 @@ block content
     
     div(class='row mb-5')
       h2(class='display-6 mt-5') Edit / Delete
-      nav(class='nav nav-pills nav-column nav-sm-row nav-justified')
+      nav(class='nav nav-pills flex-column flex-sm-row nav-justified')
         a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#edit-item') Item
         a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#edit-subcategory') Subcategory
         a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#edit-category') Category
@@ -73,16 +73,35 @@ block content
                 div(class='row')
                   a(class='col text-decoration-none' href=item.url) #{item.name} 
                     small(class='text-secondary')= item.manufacturer.name
-                  div(class='col-sm-4 btn-group btn-group-justified')
-                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#edit-${item._id}`) Edit
-                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#delete-${item._id}`) Delete
-                div(class='row mt-2')
-                  div(class='col')
-                    div(class='collapse' id=`edit-${item._id}`)
-                      div(class='card card-body') edit
-                  div(class='col')
-                    div(class='collapse' id=`delete-${item._id}`)
-                      div(class='card card-body') delete
+                  div(class='nav col-sm-4 btn-group')
+                    a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#edit-${item._id}`) Edit
+                    a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#delete-${item._id}`) Delete
+                div(class='tab-content mt-2')
+                  div(class='tab-pane fade' id=`edit-${item._id}`)
+                    div(class='card card-body')
+                      form(action=`/admin/edit-item/${item._id}` method='POST')
+                        label(class='form-label mt-2' for='item-name-edit') Name:
+                        input(class='form-control' type='text' name='item-name-edit' id='item-name-edit' value=item.name)
+                        label(class='form-label mt-2' for='item-description-edit') Description:
+                        textarea(class='form-control' type='text' name='item-description-edit' id='item-description-edit')= item.description
+                        label(class='form-label mt-2' for='item-subcategory-edit') Subcategory:
+                        select(class='form-control' name='item-subcategory-edit' id='item-subcategory-edit')
+                          for subcategory in subcategories
+                            option(value=subcategory._id selected=(subcategory._id.toString() === item.subcategory._id.toString())) #{subcategory.name} (#{subcategory.parentCategory.name})
+                        label(class='form-label mt-2' for='item-manufacturer-edit')
+                        select(class='form-control' name='item-manufacturer-edit' id='item-manufacturer-edit')
+                          for manufacturer in manufacturers
+                            option(value=manufacturer._id selected=(manufacturer._id.toString() === item.manufacturer._id.toString()))= manufacturer.name
+                        label(class='form-label mt-2' for='item-price-edit') Price (&euro;):
+                        input(class='form-control' type='text' name='item-price-edit' id='item-price-edit' value=item.price)
+                        label(class='form-label mt-2' for='item-stock-edit') Stock:
+                        input(class='form-control' type='text' name='item-stock-edit' id='item-stock-edit' value=item.stock)
+                        button(class='btn btn-success mt-2' type='submit') Edit
+                  div(class='tab-pane fade' id=`delete-${item._id}`)
+                    div(class='card card-body')
+                      form(action=`/admin/delete-item/${item._id}` method='POST')
+                        p Are you sure you want to delete this item?
+                        button(class='btn btn-danger mt-2' type='submit') Delete
         div(class='tab-pane fade' id='edit-subcategory')
           ul(class='list-group')
             for subcategory in subcategories
@@ -90,46 +109,68 @@ block content
                 div(class='row')
                   a(class='col text-decoration-none' href=subcategory.url) #{subcategory.name} 
                     small(class='text-secondary')= subcategory.parentCategory.name
-                  div(class='col-sm-4 btn-group btn-group-justified')
-                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#edit-${subcategory._id}`) Edit
-                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#delete-${subcategory._id}`) Delete
-                div(class='row mt-2')
-                  div(class='col')
-                    div(class='collapse' id=`edit-${subcategory._id}`)
-                      div(class='card card-body') edit
-                  div(class='col')
-                    div(class='collapse' id=`delete-${subcategory._id}`)
-                      div(class='card card-body') delete
+                  div(class='nav col-sm-4 btn-group')
+                    a(class='btn btn-outline-secondary' data-bs-toggle='tab' href=`#edit-${subcategory._id}`) Edit
+                    a(class='btn btn-outline-secondary' data-bs-toggle='tab' href=`#delete-${subcategory._id}`) Delete
+                div(class='tab-content mt-2')
+                  div(class='tab-pane fade' id=`edit-${subcategory._id}`)
+                    div(class='card card-body')
+                      form(action=`/admin/edit-subcategory/${subcategory._id}` method='POST')
+                        label(class='form-label mt-2' for='subcategory-name-edit') Name:
+                        input(class='form-control' type='text' name='subcategory-name-edit' id='subcategory-name-edit' value=subcategory.name)
+                        label(class='form-label mt-2' for='subcategory-description-edit') Description:
+                        textarea(class='form-control' type='text' name='subcategory-description-edit' id='subcategory-description-edit')= subcategory.description
+                        label(class='form-label mt-2' for='subcategory-parent-edit') Parent category:
+                        select(class='form-control' name='subcategory-parent-edit' id='subcategory-subcategory-edit')
+                          for category in categories
+                            option(value=category._id selected=(category._id.toString() === subcategory.parentCategory._id.toString()))= category.name
+                        button(class='btn btn-success mt-2' type='submit') Edit
+                  div(class='tab-pane fade' id=`delete-${subcategory._id}`)
+                    div(class='card card-body')
+                      form(action=`/admin/delete-subcategory/${subcategory._id}` method='POST')
+                        p Are you sure you want to delete this subcategory?
+                        button(class='btn btn-danger mt-2' type='submit') Delete
         div(class='tab-pane fade' id='edit-category')
           ul(class='list-group')
             for category in categories
               li(class='list-group-item list-group-item-action')
                 div(class='row')
                   a(class='col text-decoration-none' href=category.url) #{category.name}
-                  div(class='col-sm-4 btn-group btn-group-justified')
-                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#edit-${category._id}`) Edit
-                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#delete-${category._id}`) Delete
-                div(class='row mt-2')
-                  div(class='col')
-                    div(class='collapse' id=`edit-${category._id}`)
-                      div(class='card card-body') edit
-                  div(class='col')
-                    div(class='collapse' id=`delete-${category._id}`)
-                      div(class='card card-body') delete
+                  div(class='nav col-sm-4 btn-group')
+                    a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#edit-${category._id}`) Edit
+                    a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#delete-${category._id}`) Delete
+                div(class='tab-content mt-2')
+                  div(class='tab-pane fade' id=`edit-${category._id}`)
+                    div(class='card card-body')
+                      form(action=`/admin/edit-category/${category._id}` method='POST')
+                        label(class='form-label mt-2' for='category-name-edit') Name:
+                        input(class='form-control' type='text' name='category-name-edit' id='category-name-edit' value=category.name)
+                        label(class='form-label mt-2' for='category-description-edit') Description:
+                        textarea(class='form-control' type='text' name='category-description-edit' id='category-description-edit')= category.description
+                        button(class='btn btn-success mt-2' type='submit') Edit
+                  div(class='tab-pane fade' id=`delete-${category._id}`)
+                    div(class='card card-body')
+                      form(action=`/admin/delete-category/${category._id}` method='POST')
+                        p Are you sure you want to delete this category?
+                        button(class='btn btn-danger mt-2' type='submit') Delete
         div(class='tab-pane fade' id='edit-manufacturer')
-          ul(class='list-group')
-            for manufacturer in manufacturers
-              li(class='list-group-item list-group-item-action')
-                div(class='row')
-                  a(class='col text-decoration-none' href=manufacturer.url) #{manufacturer.name}
-                  div(class='col-sm-4 btn-group btn-group-justified')
-                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#edit-${manufacturer._id}`) Edit
-                    button(class='btn btn-outline-secondary' type='button' data-bs-toggle='collapse' data-bs-target=`#delete-${manufacturer._id}`) Delete
-                div(class='row mt-2')
-                  div(class='col')
-                    div(class='collapse' id=`edit-${manufacturer._id}`)
-                      div(class='card card-body') edit
-                  div(class='col')
-                    div(class='collapse' id=`delete-${manufacturer._id}`)
-                      div(class='card card-body') delete
-      
+            ul(class='list-group')
+              for manufacturer in manufacturers
+                li(class='list-group-item list-group-item-action')
+                  div(class='row')
+                    a(class='col text-decoration-none' href=manufacturer.url) #{manufacturer.name}
+                    div(class='nav col-sm-4 btn-group')
+                      a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#edit-${manufacturer._id}`) Edit
+                      a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#delete-${manufacturer._id}`) Delete
+                  div(class='tab-content mt-2')
+                    div(class='tab-pane fade' id=`edit-${manufacturer._id}`)
+                      div(class='card card-body')
+                        form(action=`/admin/edit-manufacturer/${manufacturer._id}` method='POST')
+                          label(class='form-label mt-2' for='manufacturer-name-edit') Name:
+                          input(class='form-control' type='text' name='manufacturer-name-edit' id='manufacturer-name-edit' value=manufacturer.name)
+                          button(class='btn btn-success mt-2' type='submit') Edit
+                    div(class='tab-pane fade' id=`delete-${manufacturer._id}`)
+                      div(class='card card-body')
+                        form(action=`/admin/delete-manufacturer/${manufacturer._id}` method='POST')
+                          p Are you sure you want to delete this manufacturer?
+                          button(class='btn btn-danger mt-2' type='submit') Delete
