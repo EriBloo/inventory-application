@@ -11,35 +11,45 @@ block content
         a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-category') Category
         a(class='text-sm-center nav-link' data-bs-toggle='tab' href='#add-manufacturer') Manufacturer
       div(class='tab-content mt-4')
-        div(class='tab-pane fade' id='add-item')
+        div(class=(newItem ? 'tab-pane fade show active' : 'tab-pane fade') id='add-item')
           div(class='card card-body')
             form(action='/admin/add-item' method='POST')
               label(class='form-label mt-2' for='item-name') Name:
-              input(class='form-control' type='text' name='item-name' id='item-name')
+              input(class='form-control' type='text' required name='item-name' id='item-name' value=(newItem ? newItem.name : ''))
               label(class='form-label mt-2' for='item-description') Description:
-              textarea(class='form-control' type='text' name='item-description' id='item-description')
+              textarea(class='form-control' type='text' required name='item-description' id='item-description')= newItem ? newItem.description : ''
               label(class='form-label mt-2' for='item-subcategory') Subcategory:
-              select(class='form-control' name='item-subcategory' id='item-subcategory')
+              select(class='form-control' required name='item-subcategory' id='item-subcategory')
                 for subcategory in subcategories
-                  option(value=subcategory._id) #{subcategory.name} (#{subcategory.parentCategory.name})
+                  if newItem
+                    option(value=subcategory._id selected=(newItem.subcategory._id.toString() === subcategory._id.toString())) #{subcategory.name} (#{subcategory.parentCategory.name})
+                  else
+                    option(value=subcategory._id) #{subcategory.name} (#{subcategory.parentCategory.name})
               label(class='form-label mt-2' for='item-manufacturer')
-              select(class='form-control' name='item-manufacturer' id='item-manufacturer')
+              select(class='form-control' required name='item-manufacturer' id='item-manufacturer')
                 for manufacturer in manufacturers
-                  option(value=manufacturer._id)= manufacturer.name
+                  if newItem
+                    option(value=manufacturer._id selected=(newItem.manufacturer._id.toString() === manufacturer._id.toString()))= manufacturer.name
+                  else
+                    option(value=manufacturer._id)= manufacturer.name
               label(class='form-label mt-2' for='item-price') Price (&euro;):
-              input(class='form-control' type='text' name='item-price' id='item-price')
+              input(class='form-control' type='number' required min='0.01' step='0.01' name='item-price' id='item-price' value=(newItem ? newItem.price : ''))
               label(class='form-label mt-2' for='item-stock') Stock:
-              input(class='form-control' type='text' name='item-stock' id='item-stock')
+              input(class='form-control' type='number' required min='0' name='item-stock' id='item-stock' value=(newItem ? newItem.stock : ''))
+              if newItem
+                ul(class='mt-3')
+                  for error in errors
+                    li(class='text-danger')= error.msg
               button(class='btn btn-success mt-2' type='submit') Add
         div(class='tab-pane fade' id='add-subcategory')
           div(class='card card-body')
             form(action='/admin/add-subcategory' method='POST')
               label(class='form-label mt-2' for='subcategory-name') Name:
-              input(class='form-control' type='text' name='subcategory-name' id='subcategory-name')
+              input(class='form-control' type='text' required name='subcategory-name' id='subcategory-name')
               label(class='form-label mt-2' for='subcategory-description') Description:
-              textarea(class='form-control' type='text' name='subcategory-description' id='subcategory-description')
+              textarea(class='form-control' type='text' required name='subcategory-description' id='subcategory-description')
               label(class='form-label mt-2' for='subcategory-parent') Parent category:
-              select(class='form-control' name='subcategory-parent' id='subcategory-subcategory')
+              select(class='form-control' required name='subcategory-parent' id='subcategory-subcategory')
                 for category in categories
                   option(value=category._id)= category.name
               button(class='btn btn-success mt-2' type='submit') Add
@@ -47,15 +57,15 @@ block content
           div(class='card card-body')
             form(action='/admin/add-category' method='POST')
               label(class='form-label mt-2' for='category-name') Name:
-              input(class='form-control' type='text' name='category-name' id='category-name')
+              input(class='form-control' type='text' required name='category-name' id='category-name')
               label(class='form-label mt-2' for='category-description') Description:
-              textarea(class='form-control' type='text' name='category-description' id='category-description')
+              textarea(class='form-control' type='text' required name='category-description' id='category-description')
               button(class='btn btn-success mt-2' type='submit') Add
         div(class='tab-pane fade' id='add-manufacturer')
           div(class='card card-body')
             form(action='/admin/add-manufacturer' method='POST')
               label(class='form-label mt-2' for='manufacturer-name') Name:
-              input(class='form-control' type='text' name='manufacturer-name' id='manufacturer-name')
+              input(class='form-control' type='text' required name='manufacturer-name' id='manufacturer-name')
               button(class='btn btn-success mt-2' type='submit') Add
     
     div(class='row mb-5')
@@ -81,21 +91,21 @@ block content
                     div(class='card card-body')
                       form(action=`/admin/edit-item/${item._id}` method='POST')
                         label(class='form-label mt-2' for='item-name-edit') Name:
-                        input(class='form-control' type='text' name='item-name-edit' id='item-name-edit' value=item.name)
+                        input(class='form-control' type='text' required name='item-name-edit' id='item-name-edit' value=item.name)
                         label(class='form-label mt-2' for='item-description-edit') Description:
-                        textarea(class='form-control' type='text' name='item-description-edit' id='item-description-edit')= item.description
+                        textarea(class='form-control' type='text' required name='item-description-edit' id='item-description-edit')= item.description
                         label(class='form-label mt-2' for='item-subcategory-edit') Subcategory:
-                        select(class='form-control' name='item-subcategory-edit' id='item-subcategory-edit')
+                        select(class='form-control' required name='item-subcategory-edit' id='item-subcategory-edit')
                           for subcategory in subcategories
                             option(value=subcategory._id selected=(subcategory._id.toString() === item.subcategory._id.toString())) #{subcategory.name} (#{subcategory.parentCategory.name})
                         label(class='form-label mt-2' for='item-manufacturer-edit')
-                        select(class='form-control' name='item-manufacturer-edit' id='item-manufacturer-edit')
+                        select(class='form-control' required name='item-manufacturer-edit' id='item-manufacturer-edit')
                           for manufacturer in manufacturers
                             option(value=manufacturer._id selected=(manufacturer._id.toString() === item.manufacturer._id.toString()))= manufacturer.name
                         label(class='form-label mt-2' for='item-price-edit') Price (&euro;):
-                        input(class='form-control' type='text' name='item-price-edit' id='item-price-edit' value=item.price)
+                        input(class='form-control' required type='number' min='0.01' step='0.01' name='item-price-edit' id='item-price-edit' value=item.price)
                         label(class='form-label mt-2' for='item-stock-edit') Stock:
-                        input(class='form-control' type='text' name='item-stock-edit' id='item-stock-edit' value=item.stock)
+                        input(class='form-control' required type='number' min='0' name='item-stock-edit' id='item-stock-edit' value=item.stock)
                         button(class='btn btn-success mt-2' type='submit') Edit
                   div(class='tab-pane fade' id=`delete-${item._id}`)
                     div(class='card card-body')
@@ -117,11 +127,11 @@ block content
                     div(class='card card-body')
                       form(action=`/admin/edit-subcategory/${subcategory._id}` method='POST')
                         label(class='form-label mt-2' for='subcategory-name-edit') Name:
-                        input(class='form-control' type='text' name='subcategory-name-edit' id='subcategory-name-edit' value=subcategory.name)
+                        input(class='form-control' type='text' required name='subcategory-name-edit' id='subcategory-name-edit' value=subcategory.name)
                         label(class='form-label mt-2' for='subcategory-description-edit') Description:
-                        textarea(class='form-control' type='text' name='subcategory-description-edit' id='subcategory-description-edit')= subcategory.description
+                        textarea(class='form-control' type='text' required name='subcategory-description-edit' id='subcategory-description-edit')= subcategory.description
                         label(class='form-label mt-2' for='subcategory-parent-edit') Parent category:
-                        select(class='form-control' name='subcategory-parent-edit' id='subcategory-subcategory-edit')
+                        select(class='form-control' required name='subcategory-parent-edit' id='subcategory-subcategory-edit')
                           for category in categories
                             option(value=category._id selected=(category._id.toString() === subcategory.parentCategory._id.toString()))= category.name
                         button(class='btn btn-success mt-2' type='submit') Edit
@@ -144,9 +154,9 @@ block content
                     div(class='card card-body')
                       form(action=`/admin/edit-category/${category._id}` method='POST')
                         label(class='form-label mt-2' for='category-name-edit') Name:
-                        input(class='form-control' type='text' name='category-name-edit' id='category-name-edit' value=category.name)
+                        input(class='form-control' type='text' required name='category-name-edit' id='category-name-edit' value=category.name)
                         label(class='form-label mt-2' for='category-description-edit') Description:
-                        textarea(class='form-control' type='text' name='category-description-edit' id='category-description-edit')= category.description
+                        textarea(class='form-control' type='text' required name='category-description-edit' id='category-description-edit')= category.description
                         button(class='btn btn-success mt-2' type='submit') Edit
                   div(class='tab-pane fade' id=`delete-${category._id}`)
                     div(class='card card-body')
@@ -167,7 +177,7 @@ block content
                       div(class='card card-body')
                         form(action=`/admin/edit-manufacturer/${manufacturer._id}` method='POST')
                           label(class='form-label mt-2' for='manufacturer-name-edit') Name:
-                          input(class='form-control' type='text' name='manufacturer-name-edit' id='manufacturer-name-edit' value=manufacturer.name)
+                          input(class='form-control' type='text' required name='manufacturer-name-edit' id='manufacturer-name-edit' value=manufacturer.name)
                           button(class='btn btn-success mt-2' type='submit') Edit
                     div(class='tab-pane fade' id=`delete-${manufacturer._id}`)
                       div(class='card card-body')

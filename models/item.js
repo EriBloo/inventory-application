@@ -15,7 +15,7 @@ const ItemSchema = new Schema({
     required: true,
   },
   price: { type: Number, required: true, min: 0.01 },
-  stock: { type: Number, default: 1, min: 1 },
+  stock: { type: Number, default: 1, min: 0 },
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 });
 
@@ -24,8 +24,11 @@ ItemSchema.virtual('rating').get(function () {
     return comment.rating;
   });
   return (
-    ratings.reduce((total, rating) => (total += rating), 0) / ratings.length ||
-    0
+    Math.round(
+      (ratings.reduce((total, rating) => (total += rating), 0) /
+        ratings.length) *
+        100,
+    ) / 100 || 0
   );
 });
 

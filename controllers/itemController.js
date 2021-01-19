@@ -53,6 +53,14 @@ exports.commentCreatePost = [
   body('rating').escape().toInt(),
 
   (req, res, next) => {
+    const errors = validationResult(req);
+
+    const newComment = new Comment({
+      author: req.body.author,
+      content: req.body.content,
+      rating: req.body.rating,
+    });
+
     Item.findById(req.params.id)
       .populate('manufacturer')
       .populate('subcategory')
@@ -61,28 +69,22 @@ exports.commentCreatePost = [
         if (err) {
           next(err);
         }
-        const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
           res.render('itemDetail', {
             title: `${result.manufacturer.name} ${result.name}`,
             item: result,
             tab: 'comments',
-            newComment: req.body,
+            newComment: newComment,
             errors: errors.array(),
           });
           return;
         } else {
-          const comment = new Comment({
-            author: req.body.author,
-            content: req.body.content,
-            rating: req.body.rating,
-          });
-          comment.save(function (err) {
+          newComment.save(function (err) {
             if (err) {
               next(err);
             }
-            result.comments.push(comment);
+            result.comments.push(newComment);
             result.save(function (err) {
               if (err) {
                 next(err);
@@ -98,27 +100,3 @@ exports.commentCreatePost = [
       });
   },
 ];
-
-exports.itemCreateGet = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Item create GET');
-};
-
-exports.itemCreatePost = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Item Create POST');
-};
-
-exports.itemDeleteGet = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Item Delete GET');
-};
-
-exports.itemDeletePost = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Item Delete POST');
-};
-
-exports.itemUpdateGet = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Item Update GET');
-};
-
-exports.itemUpdatePost = function (req, res, next) {
-  res.send('NOT IMPLEMENTED: Item Update POSTs');
-};
