@@ -21,4 +21,8 @@ router.post('/edit-subcategory/:id', adminController.subcategoryUpdatePost);
 
 router.post('/delete-subcategory/:id', adminController.subcategoryDeletePost);
 
+router.post('/edit-category/:id', adminController.categoryUpdatePost);
+
+router.post('/delete-category/:id', adminController.categoryDeletePost);
+
 module.exports = router;

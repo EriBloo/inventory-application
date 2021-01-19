@@ -596,3 +596,149 @@ exports.subcategoryDeletePost = function (req, res, next) {
     },
   );
 };
+
+exports.categoryUpdatePost = [
+  body('category-name')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Name must be specified'),
+  body('category-description')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Description must be specified'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const editCategory = new Category({
+      name: req.body['category-name'],
+      description: req.body['category-description'],
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      async.parallel(
+        {
+          items: function (callback) {
+            Item.find()
+              .sort([['name', 'ascending']])
+              .populate('manufacturer')
+              .exec(callback);
+          },
+          subcategories: function (callback) {
+            Subcategory.find()
+              .sort([['name', 'ascending']])
+              .populate('parentCategory')
+              .exec(callback);
+          },
+          categories: function (callback) {
+            Category.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+          manufacturers: function (callback) {
+            Manufacturer.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+        },
+        function (err, results) {
+          if (err) {
+            next(err);
+          }
+          res.render('admin', {
+            title: 'Admin controls',
+            items: results.items,
+            subcategories: results.subcategories,
+            categories: results.categories,
+            manufacturers: results.manufacturers,
+            editCategory: editCategory,
+            errors: errors.array(),
+          });
+          return;
+        },
+      );
+    } else {
+      Category.findByIdAndUpdate(
+        req.params.id,
+        editCategory,
+        {},
+        function (err, updatedCategory) {
+          if (err) {
+            next(err);
+          }
+          res.redirect(updatedCategory.url);
+        },
+      );
+    }
+  },
+];
+
+exports.categoryDeletePost = function (req, res, next) {
+  async.parallel(
+    {
+      category: function (callback) {
+        Category.findById(req.params.id).exec(callback);
+      },
+      subcategories: function (callback) {
+        Subcategory.find({ parentCategory: req.params.id }).exec(callback);
+      },
+    },
+    function (err, resultsOne) {
+      if (err) {
+        next(err);
+      }
+
+      if (resultsOne.subcategories.length > 0) {
+        async.parallel(
+          {
+            items: function (callback) {
+              Item.find()
+                .sort([['name', 'ascending']])
+                .populate('manufacturer')
+                .exec(callback);
+            },
+            subcategories: function (callback) {
+              Subcategory.find()
+                .sort([['name', 'ascending']])
+                .populate('parentCategory')
+                .exec(callback);
+            },
+            categories: function (callback) {
+              Category.find()
+                .sort([['name', 'ascending']])
+                .exec(callback);
+            },
+            manufacturers: function (callback) {
+              Manufacturer.find()
+                .sort([['name', 'ascending']])
+                .exec(callback);
+            },
+          },
+          function (err, resultsTwo) {
+            if (err) {
+              next(err);
+            }
+            res.render('admin', {
+              title: 'Admin controls',
+              items: resultsTwo.items,
+              subcategories: resultsTwo.subcategories,
+              categories: resultsTwo.categories,
+              manufacturers: resultsTwo.manufacturers,
+              deleteCategory: resultsOne.category,
+            });
+          },
+        );
+      } else {
+        Category.findByIdAndDelete(req.params.id, {}, function (err) {
+          if (err) {
+            next(err);
+          }
+          res.redirect('/admin');
+        });
+      }
+    },
+  );
+};

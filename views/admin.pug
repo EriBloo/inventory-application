@@ -104,8 +104,8 @@ block content
                   a(class='col text-decoration-none' href=item.url) #{item.name} 
                     small(class='text-secondary')= item.manufacturer.name
                   div(class='nav col-sm-4 btn-group')
-                    a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#edit-${item._id}`) Edit
-                    a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#delete-${item._id}`) Delete
+                    a(class=(editItem && editItem._id.toString() === item._id.toString() ? 'btn btn-outline-secondary active' : 'btn btn-outline-secondary') data-bs-toggle='tab' href=`#edit-${item._id}`) Edit
+                    a(class=(deleteItem && deleteItem._id.toString() === item._id.toString() ? 'btn btn-outline-secondary active' : 'btn btn-outline-secondary') data-bs-toggle='tab' href=`#delete-${item._id}`) Delete
                 div(class='tab-content mt-2')
                   div(class=(editItem && editItem._id.toString() === item._id.toString() ? 'tab-pane fade show active' : 'tab-pane fade') id=`edit-${item._id}`)
                     div(class='card card-body')
@@ -177,32 +177,34 @@ block content
                     div(class='card card-body')
                       form(action=`/admin/delete-subcategory/${subcategory._id}` method='POST')
                         p Are you sure you want to delete this subcategory?
-                        if deleteSubcategory
+                        if deleteSubcategory && deleteSubcategory._id.toString() === subcategory._id.toString()
                           p(class='text-danger') Only empty subcategory can be deleted.
                         button(class='btn btn-danger mt-2' type='submit') Delete
 
-        div(class='tab-pane fade' id='edit-category')
+        div(class=(editCategory || deleteCategory ? 'tab-pane fade show active' : 'tab-pane fade') id='edit-category')
           ul(class='list-group')
             for category in categories
               li(class='list-group-item list-group-item-action')
                 div(class='row')
                   a(class='col text-decoration-none' href=category.url) #{category.name}
                   div(class='nav col-sm-4 btn-group')
-                    a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#edit-${category._id}`) Edit
-                    a(class='nav-link btn btn-outline-secondary' data-bs-toggle='tab' href=`#delete-${category._id}`) Delete
+                    a(class=(editCategory && editCategory._id.toString() === category._id.toString() ? 'btn btn-outline-secondary active' : 'btn btn-outline-secondary') data-bs-toggle='tab' href=`#edit-${category._id}`) Edit
+                    a(class=(deleteCategory && deleteCategory._id.toString() === category._id.toString() ? 'btn btn-outline-secondary active' : 'btn btn-outline-secondary') data-bs-toggle='tab' href=`#delete-${category._id}`) Delete
                 div(class='tab-content mt-2')
-                  div(class='tab-pane fade' id=`edit-${category._id}`)
+                  div(class=(editCategory && editCategory._id.toString() === category._id.toString() ? 'tab-pane fade show active' : 'tab-pane fade') id=`edit-${category._id}`)
                     div(class='card card-body')
                       form(action=`/admin/edit-category/${category._id}` method='POST')
-                        label(class='form-label mt-2' for='category-name-edit') Name:
-                        input(class='form-control' type='text' required name='category-name-edit' id='category-name-edit' value=category.name)
-                        label(class='form-label mt-2' for='category-description-edit') Description:
-                        textarea(class='form-control' type='text' required name='category-description-edit' id='category-description-edit')= category.description
+                        label(class='form-label mt-2' for=`category-name-${category._id}`) Name:
+                        input(class='form-control' type='text' required name='category-name' id=`category-name-${category._id}` value=(editCategory && editCategory._id.toString() === category._id.toString() ? editCategory.name : category.name))
+                        label(class='form-label mt-2' for=`category-description-${category._id}`) Description:
+                        textarea(class='form-control' type='text' required name='category-description' id=`category-description-${category._id}`)= (editCategory && editCategory._id.toString() === category._id.toString() ? editCategory.name : category.name)
                         button(class='btn btn-success mt-2' type='submit') Edit
-                  div(class='tab-pane fade' id=`delete-${category._id}`)
+                  div(class=(deleteCategory && deleteCategory._id.toString() === category._id.toString() ? 'tab-pane fade show active' : 'tab-pane fade') id=`delete-${category._id}`)
                     div(class='card card-body')
                       form(action=`/admin/delete-category/${category._id}` method='POST')
                         p Are you sure you want to delete this category?
+                        if deleteCategory && deleteCategory._id.toString() === category._id.toString()
+                          p(class='text-danger') Only empty subcategory can be deleted.
                         button(class='btn btn-danger mt-2' type='submit') Delete
 
         div(class='tab-pane fade' id='edit-manufacturer')
