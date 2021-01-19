@@ -7,4 +7,6 @@ router.get('/', adminController.adminList);
 
 router.post('/add-item', adminController.itemCreatePost);
 
+router.post('/add-subcategory', adminController.subcategoryCreatePost);
+
 module.exports = router;

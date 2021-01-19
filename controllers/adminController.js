@@ -125,3 +125,77 @@ exports.itemCreatePost = [
     }
   },
 ];
+
+exports.subcategoryCreatePost = [
+  body('subcategory-name')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Name must be specified'),
+  body('subcategory-description')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Description must be specified'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const newSubcategory = new Subcategory({
+      name: req.body['subcategory-name'],
+      description: req.body['subcategory-description'],
+      parentCategory: req.body['subcategory-parent'],
+    });
+
+    if (!errors.isEmpty()) {
+      async.parallel(
+        {
+          items: function (callback) {
+            Item.find()
+              .sort([['name', 'ascending']])
+              .populate('manufacturer')
+              .exec(callback);
+          },
+          subcategories: function (callback) {
+            Subcategory.find()
+              .sort([['name', 'ascending']])
+              .populate('parentCategory')
+              .exec(callback);
+          },
+          categories: function (callback) {
+            Category.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+          manufacturers: function (callback) {
+            Manufacturer.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+        },
+        function (err, results) {
+          if (err) {
+            next(err);
+          }
+          res.render('admin', {
+            title: 'Admin controls',
+            items: results.items,
+            subcategories: results.subcategories,
+            categories: results.categories,
+            manufacturers: results.manufacturers,
+            newSubcategory: newSubcategory,
+            errors: errors.array(),
+          });
+          return;
+        },
+      );
+    } else {
+      newSubcategory.save(function (err) {
+        if (err) {
+          next(err);
+        }
+        res.redirect(newSubcategory.url);
+      });
+    }
+  },
+];
