@@ -15,4 +15,6 @@ router.post('/add-manufacturer', adminController.manufacturerCreatePost);
 
 router.post('/edit-item/:id', adminController.itemUpdatePost);
 
+router.post('/delete-item/:id', adminController.itemDeletePost);
+
 module.exports = router;

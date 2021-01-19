@@ -5,6 +5,7 @@ const Item = require('../models/item');
 const Subcategory = require('../models/subcategory');
 const Category = require('../models/category');
 const Manufacturer = require('../models/manufacturer');
+const Comment = require('../models/comment');
 
 exports.adminList = function (req, res, next) {
   async.parallel(
@@ -369,8 +370,6 @@ exports.itemUpdatePost = [
       _id: req.params.id,
     });
 
-    console.log(editItem)
-
     if (!errors.isEmpty()) {
       async.parallel(
         {
@@ -428,3 +427,26 @@ exports.itemUpdatePost = [
     }
   },
 ];
+
+exports.itemDeletePost = function (req, res, next) {
+  Item.findById(req.params.id).exec(function (err, result) {
+    if (err) {
+      next(err);
+    }
+    if (result.comments.length > 0) {
+      result.comments.map((comment) => {
+        Comment.findByIdAndDelete(comment, {}, function (err) {
+          if (err) {
+            next(err);
+          }
+        });
+      });
+    }
+    Item.findByIdAndDelete(req.params.id, {}, function (err) {
+      if (err) {
+        next(err);
+      }
+      res.redirect('/admin');
+    });
+  });
+};
