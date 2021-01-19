@@ -199,3 +199,143 @@ exports.subcategoryCreatePost = [
     }
   },
 ];
+
+exports.categoryCreatePost = [
+  body('category-name')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Name must be specified'),
+  body('category-description')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Description must be specified'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const newCategory = new Category({
+      name: req.body['category-name'],
+      description: req.body['category-description'],
+    });
+
+    if (!errors.isEmpty()) {
+      async.parallel(
+        {
+          items: function (callback) {
+            Item.find()
+              .sort([['name', 'ascending']])
+              .populate('manufacturer')
+              .exec(callback);
+          },
+          subcategories: function (callback) {
+            Subcategory.find()
+              .sort([['name', 'ascending']])
+              .populate('parentCategory')
+              .exec(callback);
+          },
+          categories: function (callback) {
+            Category.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+          manufacturers: function (callback) {
+            Manufacturer.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+        },
+        function (err, results) {
+          if (err) {
+            next(err);
+          }
+          res.render('admin', {
+            title: 'Admin controls',
+            items: results.items,
+            subcategories: results.subcategories,
+            categories: results.categories,
+            manufacturers: results.manufacturers,
+            newCategory: newCategory,
+            errors: errors.array(),
+          });
+          return;
+        },
+      );
+    } else {
+      newCategory.save(function (err) {
+        if (err) {
+          next(err);
+        }
+        res.redirect(newCategory.url);
+      });
+    }
+  },
+];
+
+exports.manufacturerCreatePost = [
+  body('manufacturer-name')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Name must be specified'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const newManufacturer = new Manufacturer({
+      name: req.body['manufacturer-name'],
+    });
+
+    if (!errors.isEmpty()) {
+      async.parallel(
+        {
+          items: function (callback) {
+            Item.find()
+              .sort([['name', 'ascending']])
+              .populate('manufacturer')
+              .exec(callback);
+          },
+          subcategories: function (callback) {
+            Subcategory.find()
+              .sort([['name', 'ascending']])
+              .populate('parentCategory')
+              .exec(callback);
+          },
+          categories: function (callback) {
+            Category.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+          manufacturers: function (callback) {
+            Manufacturer.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+        },
+        function (err, results) {
+          if (err) {
+            next(err);
+          }
+          res.render('admin', {
+            title: 'Admin controls',
+            items: results.items,
+            subcategories: results.subcategories,
+            categories: results.categories,
+            manufacturers: results.manufacturers,
+            newManufacturer: newManufacturer,
+            errors: errors.array(),
+          });
+          return;
+        },
+      );
+    } else {
+      newManufacturer.save(function (err) {
+        if (err) {
+          next(err);
+        }
+        res.redirect(newManufacturer.url);
+      });
+    }
+  },
+];
