@@ -71,6 +71,7 @@ exports.itemCreatePost = [
       manufacturer: req.body['item-manufacturer'],
       price: req.body['item-price'],
       stock: req.body['item-stock'],
+      comments: [],
     });
 
     if (!errors.isEmpty()) {
@@ -336,6 +337,94 @@ exports.manufacturerCreatePost = [
         }
         res.redirect(newManufacturer.url);
       });
+    }
+  },
+];
+
+exports.itemUpdatePost = [
+  body('item-name')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Name must be specified'),
+  body('item-description')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Description must be specified'),
+  body('item-price').escape().toInt(),
+  body('item-stock').escape().toInt(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const editItem = new Item({
+      name: req.body['item-name'],
+      description: req.body['item-description'],
+      subcategory: req.body['item-subcategory'],
+      manufacturer: req.body['item-manufacturer'],
+      price: req.body['item-price'],
+      stock: req.body['item-stock'],
+      comments: [],
+      _id: req.params.id,
+    });
+
+    console.log(editItem)
+
+    if (!errors.isEmpty()) {
+      async.parallel(
+        {
+          items: function (callback) {
+            Item.find()
+              .sort([['name', 'ascending']])
+              .populate('manufacturer')
+              .exec(callback);
+          },
+          subcategories: function (callback) {
+            Subcategory.find()
+              .sort([['name', 'ascending']])
+              .populate('parentCategory')
+              .exec(callback);
+          },
+          categories: function (callback) {
+            Category.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+          manufacturers: function (callback) {
+            Manufacturer.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+        },
+        function (err, results) {
+          if (err) {
+            next(err);
+          }
+          res.render('admin', {
+            title: 'Admin controls',
+            items: results.items,
+            subcategories: results.subcategories,
+            categories: results.categories,
+            manufacturers: results.manufacturers,
+            editItem: editItem,
+            errors: errors.array(),
+          });
+          return;
+        },
+      );
+    } else {
+      Item.findByIdAndUpdate(
+        req.params.id,
+        editItem,
+        {},
+        function (err, updatedItem) {
+          if (err) {
+            next(err);
+          }
+          res.redirect(updatedItem.url);
+        },
+      );
     }
   },
 ];

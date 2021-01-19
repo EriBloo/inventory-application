@@ -13,4 +13,6 @@ router.post('/add-category', adminController.categoryCreatePost);
 
 router.post('/add-manufacturer', adminController.manufacturerCreatePost);
 
+router.post('/edit-item/:id', adminController.itemUpdatePost);
+
 module.exports = router;
