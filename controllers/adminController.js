@@ -742,3 +742,142 @@ exports.categoryDeletePost = function (req, res, next) {
     },
   );
 };
+
+exports.manufacturerUpdatePost = [
+  body('manufacturer-name')
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage('Name must be specified'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    const editManufacturer = new Manufacturer({
+      name: req.body['manufacturer-name'],
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      async.parallel(
+        {
+          items: function (callback) {
+            Item.find()
+              .sort([['name', 'ascending']])
+              .populate('manufacturer')
+              .exec(callback);
+          },
+          subcategories: function (callback) {
+            Subcategory.find()
+              .sort([['name', 'ascending']])
+              .populate('parentCategory')
+              .exec(callback);
+          },
+          categories: function (callback) {
+            Category.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+          manufacturers: function (callback) {
+            Manufacturer.find()
+              .sort([['name', 'ascending']])
+              .exec(callback);
+          },
+        },
+        function (err, results) {
+          if (err) {
+            next(err);
+          }
+          res.render('admin', {
+            title: 'Admin controls',
+            items: results.items,
+            subcategories: results.subcategories,
+            categories: results.categories,
+            manufacturers: results.manufacturers,
+            editManufacturer: editManufacturer,
+            errors: errors.array(),
+          });
+          return;
+        },
+      );
+    } else {
+      Manufacturer.findByIdAndUpdate(
+        req.params.id,
+        editManufacturer,
+        {},
+        function (err, updatedManufacturer) {
+          if (err) {
+            next(err);
+          }
+          res.redirect(updatedManufacturer.url);
+        },
+      );
+    }
+  },
+];
+
+exports.manufacturerDeletePost = function (req, res, next) {
+  async.parallel(
+    {
+      manufacturer: function (callback) {
+        Manufacturer.findById(req.params.id).exec(callback);
+      },
+      items: function (callback) {
+        Item.find({ manufacturer: req.params.id }).exec(callback);
+      },
+    },
+    function (err, resultsOne) {
+      if (err) {
+        next(err);
+      }
+      if (resultsOne.items.length > 0) {
+        async.parallel(
+          {
+            items: function (callback) {
+              Item.find()
+                .sort([['name', 'ascending']])
+                .populate('manufacturer')
+                .exec(callback);
+            },
+            subcategories: function (callback) {
+              Subcategory.find()
+                .sort([['name', 'ascending']])
+                .populate('parentCategory')
+                .exec(callback);
+            },
+            categories: function (callback) {
+              Category.find()
+                .sort([['name', 'ascending']])
+                .exec(callback);
+            },
+            manufacturers: function (callback) {
+              Manufacturer.find()
+                .sort([['name', 'ascending']])
+                .exec(callback);
+            },
+          },
+          function (err, resultsTwo) {
+            if (err) {
+              next(err);
+            }
+            res.render('admin', {
+              title: 'Admin controls',
+              items: resultsTwo.items,
+              subcategories: resultsTwo.subcategories,
+              categories: resultsTwo.categories,
+              manufacturers: resultsTwo.manufacturers,
+              deleteManufacturer: resultsOne.manufacturer,
+            });
+          },
+        );
+      } else {
+        Manufacturer.findByIdAndDelete(req.params.id, {}, function (err) {
+          if (err) {
+            next(err);
+          }
+          res.redirect('/admin');
+        });
+      }
+    },
+  );
+};

@@ -25,4 +25,8 @@ router.post('/edit-category/:id', adminController.categoryUpdatePost);
 
 router.post('/delete-category/:id', adminController.categoryDeletePost);
 
+router.post('/edit-manufacturer/:id', adminController.manufacturerUpdatePost);
+
+router.post('/delete-manufacturer/:id', adminController.manufacturerDeletePost);
+
 module.exports = router;
