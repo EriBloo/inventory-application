@@ -5,8 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const compression = require('compression');
 const helmet = require('helmet');
-const mongoDBkey = require('./mongoDBkey');
-const mongoDB = process.env.MONGODB_URI || mongoDBkey;
+const mongoDBkey = process.env.MONGODB_URI || require('./mongoDBkey');
 
 require('./models/item');
 require('./models/comment');
@@ -24,7 +23,7 @@ const app = express();
 
 //Set up mongoose connection
 const mongoose = require('mongoose');
-mongoose.connect(mongoDB, {
+mongoose.connect(mongoDBkey, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
