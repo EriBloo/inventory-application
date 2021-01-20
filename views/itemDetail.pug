@@ -30,7 +30,7 @@ block content
             a(class=(tab === undefined || tab === 'description' ? 'nav-link active' : 'nav-link') id='description-tab' data-bs-toggle='tab' href='#description' role='tab') Description
           li(class='nav-item' role='presentation')
             a(class=(tab === 'comments' ? 'nav-link active' : 'nav-link') id='comments-tab' data-bs-toggle='tab' href='#comments' role='tab') Comments
-        div(class='tab-content' id='tabContent')
+        div(class='tab-content mb-4' id='tabContent')
           div(class=(tab === undefined || tab === 'description' ? 'tab-pane fade show active' : 'tab-pane fade') id='description' role='tabpanel')
             p(class='mt-3')= item.description
           div(class=(tab === 'comments' ? 'tab-pane fade show active' : 'tab-pane fade') id='comments' role='tabpanel')

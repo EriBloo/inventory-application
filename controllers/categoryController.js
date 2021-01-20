@@ -63,6 +63,7 @@ exports.categoryDetail = function (req, res, next) {
           }
           res.render('itemList', {
             title: results.category.name,
+            description: results.category.description,
             subcategories: results.subcategories,
             items: result.sort((a, b) => b.rating - a.rating),
           });

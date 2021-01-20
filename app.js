@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const compression = require('compression');
+const helmet = require('helmet');
 const mongoDBkey = require('./mongoDBkey');
 
 require('./models/item');
@@ -32,6 +34,19 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", 'cdn.jsdelivr.net'],
+        styleSrc: ["'self'", 'cdn.jsdelivr.net'],
+        fontSrc: ["'self'", 'cdn.jsdelivr.net'],
+      },
+    },
+  }),
+);
+app.use(compression());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

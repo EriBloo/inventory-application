@@ -3,15 +3,17 @@ extends layout
 block content
   div(class='container')
     div(class='row')
-      h1(class='display-5 mt-5')= title
+      h1(class='display-5 mt-5') #{title} 
         if subtitle
-          h2(class='display-6 text-muted')= subtitle
-    div(class='row mb-4 justify-content-center')
-      each subcategory in subcategories || []
-        div(class='col-3 g-2 text-center')
+          small(class='text-secondary')= subtitle
+      if description
+        p(class='lead text-muted')= description
+    div(class='row mb-4 align-items-center justify-content-center')
+      for subcategory in subcategories || []
+        div(class='col g-2 text-center')
           a(class='btn btn-outline-info text-body btn-lg' href=subcategory.url)= subcategory.name
     div(class='row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-2')
-      each item in items || []
+      for item in items || []
         div(class='col')
           div(class='card shadow-sm h-100')
             div(class='row card-body')
@@ -31,4 +33,4 @@ block content
                     p(class='text-danger') Out of stock
                 a(class='btn btn-outline-primary' href=item.url) View
       else
-        h2(class='display-6 text-secondary') There are no items.
+        h4(class='display-6 text-secondary') There are no items.
