@@ -6,6 +6,7 @@ const logger = require('morgan');
 const compression = require('compression');
 const helmet = require('helmet');
 const mongoDBkey = require('./mongoDBkey');
+const mongoDB = process.env.MONGODB_URI || mongoDBkey;
 
 require('./models/item');
 require('./models/comment');
@@ -23,7 +24,7 @@ const app = express();
 
 //Set up mongoose connection
 const mongoose = require('mongoose');
-mongoose.connect(mongoDBkey, {
+mongoose.connect(mongoDB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
